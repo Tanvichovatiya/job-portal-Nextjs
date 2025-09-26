@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  REMOTE
+}
+
+model User {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  email       String   @unique
+  password    String
+  role        String   // "user" or "company"
+  createdAt   DateTime @default(now())
+  jobs        Job[]    @relation("EmployerJobs")
+  applications Application[]
+}
+
+model Job {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  salary      Int?
+  category    String?
+  location    String?
+  jobType     JobType
+  employerId  String   @db.ObjectId
+  employer    User     @relation("EmployerJobs", fields: [employerId], references: [id])
+  createdAt   DateTime @default(now())
+  applications Application[]
+  companyName String
+}
+model Application {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  jobId     String   @db.ObjectId
+  job       Job      @relation(fields: [jobId], references: [id])
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  resume    String?
+  status    String   @default("pending") // pending, accepted, rejected
+  createdAt DateTime @default(now())
+}
