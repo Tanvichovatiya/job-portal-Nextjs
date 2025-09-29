@@ -5,6 +5,7 @@ import { verifyToken } from "../utils/auth";
 import { registerAuthHandlers } from "./authHandlers";
 import { registerJobHandlers } from "./jobHandlers";
 import { TokenExpiredError } from "jsonwebtoken";
+import { registerApplicationHandlers } from "./applicationHandler";
 // import { registerApplicationHandlers } from "./applicationHandlers"; // optional if you have it
 
 export function initSocket(io: IOServer) {
@@ -51,6 +52,7 @@ io.on("connection", (socket: Socket) => {
   // Register your handlers
   registerAuthHandlers(io, socket);
   registerJobHandlers(io, socket);
+  registerApplicationHandlers(io, socket); // optional if you have it
 });
 
 }
