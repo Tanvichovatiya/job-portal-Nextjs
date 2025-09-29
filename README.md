@@ -1,5 +1,5 @@
 # Job Portal – Monorepo (Next.js + Express/Socket.IO + Prisma/MongoDB)
-
+# currently Running
 A full‑stack job portal with a Next.js frontend and a Node/Express Socket.IO backend using Prisma with a MongoDB datasource.
 
 ## Tech Stack
@@ -110,3 +110,4 @@ Set appropriate environment variables in your deployment environment. Ensure the
 ## Troubleshooting
 - Connection/CORS issues: confirm `FRONTEND_ORIGIN` matches the frontend URL.
 - Prisma errors: ensure `DATABASE_URL` is valid, then re-run `npm run prisma:generate` and `npm run prisma:push` in `backend`.
+
