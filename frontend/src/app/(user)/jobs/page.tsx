@@ -57,34 +57,22 @@ export default function UserPage() {
   return (
     <>
       <Navbar />
+      {/* Hero Banner */}
+<section
+  className="relative w-full h-[300px] md:h-[400px] flex items-center justify-center bg-center bg-cover"
+  style={{ backgroundImage: "url('hero/about.jpg')" }}
+>
+  {/* Overlay */}
+  <div className="absolute inset-0 filter backdrop-contrast-50 "></div>
 
-      {/* Hero Section */}
-      <section className="relative w-full bg-gray-50">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center md:justify-between px-6 py-16 md:py-24">
-          {/* Text Section */}
-          <div className="md:w-1/2 text-left z-10">
-            <h1 className="text-4xl md:text-6xl font-bold text-black leading-tight mb-4">
-              Find Your <span className="text-gray-700">Dream Job</span>
-            </h1>
-            <p className="text-gray-600 text-lg md:text-xl mb-6 max-w-lg">
-              Explore top opportunities that match your skills and ambitions.
-              Apply easily and take your career to the next level.
-            </p>
-            <button className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition">
-              Get Started
-            </button>
-          </div>
+  {/* Centered Text */}
+  <h1 className="relative text-4xl md:text-5xl font-bold text-white z-10">
+    Get Your Job
+  </h1>
+</section>
 
-          {/* Hero Image */}
-          <div className="hidden md:block md:w-1/2">
-            <img
-              src="/hero/h1_hero.jpg"
-              alt="Job search"
-              className="w-full h-full object-cover rounded-2xl shadow-lg"
-            />
-          </div>
-        </div>
-      </section>
+
+    
 
       {/* Filters */}
       <div className="max-w-6xl mx-auto px-4 py-10">

@@ -14,12 +14,13 @@ export default function HomePage() {
     if (token && user) {
       // Redirect based on role
       if (user.role === "company") router.push("/dashboard");
-      else router.push("/user");
+      else router.push("/home");
     }
+   
   }, [router]);
 
   return (
-    <div className="container mt-5">
+    <div className=" w-full ">
       
       <RegisterForm />
     </div>

@@ -1,32 +1,49 @@
 "use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-type SidebarItem = {
-  href: string;
-  label: string;
-  icon?: string; // optional bootstrap icon class name
-};
+export default function DashboardSidebar() {
+  const pathname = usePathname();
 
-export default function DashboardSidebar({ items, activeHref }: { items: SidebarItem[]; activeHref?: string }) {
+  const menuItems = [
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/dashboard/jobs", label: "Jobs" },
+    { href: "/dashboard/applications", label: "Applications" },
+    { href: "/dashboard/profile", label: "Profile" },
+  ];
+
   return (
-    <aside className="card shadow-sm position-sticky" style={{ top: "1rem" }}>
-      <div className="list-group list-group-flush">
-        {items.map((item) => {
-          const isActive = activeHref === item.href;
+    <aside
+      className="
+        w-[200px]                     /* Fixed width */
+        min-h-screen
+        pb-0                  /* Full height */
+        bg-black                      /* Black background */
+        text-white                   /* White text */
+        border-r border-gray-800      /* Right border */
+        sticky top-12 left-0           /* Stick to left */
+        pt-3                           /* Padding to avoid overlap with r                         /
+        overflow-y-auto               /* Scroll if content overflows */
+      "
+    >
+      <nav className="flex flex-col space-y-2 p-4">
+        {menuItems.map((item) => {
+          const isActive = pathname === item.href;
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`list-group-item list-group-item-action ${isActive ? "active" : ""}`}
+              className={`block px-3 py-2 rounded-md transition-colors duration-200
+                ${isActive
+                  ? "bg-gray-200 font-semibold"
+                  : "hover:bg-gray-100"
+                }`}
             >
-              {item.icon && <i className={`${item.icon} me-2`} aria-hidden="true" />}
               {item.label}
             </Link>
           );
         })}
-      </div>
+      </nav>
     </aside>
   );
 }
-
-

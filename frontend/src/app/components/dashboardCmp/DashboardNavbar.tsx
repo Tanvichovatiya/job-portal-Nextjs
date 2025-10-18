@@ -1,93 +1,165 @@
 "use client";
 import Link from "next/link";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 
-export default function DashboardNavbar({ userName, onLogout }: { userName?: string; onLogout?: () => void }) {
+export default function DashboardNavbar({
+  userName,
+  onLogout,
+}: {
+  userName?: string;
+  onLogout?: () => void;
+}) {
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
+
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/user", label: "Jobs" },
     { href: "/dashboard", label: "Dashboard" },
   ];
+
+  const toggleMenu = () => setIsOpen(!isOpen);
+
   return (
-    <nav className="navbar navbar-light bg-white border-bottom shadow-sm dashboard-navbar">
-      <div className="container px-3 d-lg-flex align-items-center">
-        <Link className="navbar-brand fw-semibold text-primary d-flex align-items-center gap-2" href="/dashboard">
-          <img src="/globe.svg" alt="Logo" width={24} height={24} />
-          <span>Company Dashboard</span>
-        </Link>
+    <nav className="bg-black text-white sticky top-0 z-50 shadow-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16 items-center">
+          {/* Logo */}
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-2 text-white font-semibold text-lg"
+          >
+            <img src="/globe.svg" alt="Logo" className="w-6 h-6" />
+            <span>Company Dashboard</span>
+          </Link>
 
-        {/* Mobile toggler (offcanvas) */}
-        <button
-          className="navbar-toggler d-md-none"
-          type="button"
-          data-bs-toggle="offcanvas"
-          data-bs-target="#dashboardOffcanvas"
-          aria-controls="dashboardOffcanvas"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
+          {/* Desktop Menu */}
+          <div className="hidden lg:flex lg:items-center lg:gap-6 ml-6">
+            {navLinks.map((link) => {
+              const isActive =
+                pathname === link.href || pathname.startsWith(link.href + "/");
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`px-2 py-1 font-medium transition-colors duration-200 ease-in-out no-underline ${
+                    isActive
+                      ? "text-white" // Active link: white
+                      : "text-white hover:text-gray-400" // Non-active: white, hover gray
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </div>
 
-        {/* Desktop menu (>= 992px) */}
-        <div className="d-none d-lg-flex align-items-center flex-grow-1 justify-content-between">
-          <div className="flex-grow-1 d-flex align-items-center">
-            <ul className="navbar-nav  mb-0 gap-3 mx-lg-auto d-flex  align-items-center">
-              {navLinks.map((l) => {
-                const isActive = pathname === l.href || pathname.startsWith(l.href + "/");
-                return (
-                  <li key={l.href} className="nav-item">
-                    <Link className={`nav-link ${isActive ? "active" : "text-dark"}`} aria-current={isActive ? "page" : undefined} href={l.href}>
-                      {l.label}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-            <div className="ms-3 d-none d-lg-block" style={{ minWidth: 220 }}>
-              <input className="form-control form-control-sm" placeholder="Search jobs..." />
+          {/* Right Section */}
+          <div className="hidden lg:flex lg:items-center lg:gap-3">
+
+            {userName && (
+              <span className="text-gray-200 ml-2">Hi, {userName}</span>
+            )}
+            {onLogout ? (
+              <button
+                onClick={onLogout}
+                className="ml-2 px-3 py-1 border border-gray-400 text-gray-400 rounded-md hover:bg-gray-800 hover:text-white transition"
+              >
+                Logout
+              </button>
+            ) : (
+              <Link
+                href="/logout"
+                className="ml-2 px-3 py-1 border border-gray-400 text-gray-400 rounded-md hover:bg-gray-800 hover:text-white transition"
+              >
+                Logout
+              </Link>
+            )}
+          </div>
+
+          {/* Mobile Hamburger */}
+          <div className="lg:hidden flex items-center">
+            <button
+              onClick={toggleMenu}
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-200 hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500"
+            >
+              <svg
+                className="h-6 w-6"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                {isOpen ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                )}
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="lg:hidden bg-black border-t border-gray-700">
+          <div className="px-4 pt-2 pb-4 space-y-2">
+            {navLinks.map((link) => {
+              const isActive =
+                pathname === link.href || pathname.startsWith(link.href + "/");
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setIsOpen(false)}
+                  className={`block px-2 py-1 rounded-md font-medium transition-colors duration-200 ease-in-out no-underline ${
+                    isActive
+                      ? "text-white" // Active link: white
+                      : "text-white hover:text-gray-400" // Non-active: white, hover gray
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+
+           
+
+            <div className="flex items-center gap-2 mt-2">
+              {userName && (
+                <span className="text-gray-200">Hi, {userName}</span>
+              )}
+              {onLogout ? (
+                <button
+                  onClick={onLogout}
+                  className="px-3 py-1 border border-gray-400 text-gray-400 rounded-md hover:bg-gray-800 hover:text-white transition"
+                >
+                  Logout
+                </button>
+              ) : (
+                <Link
+                  href="/logout"
+                  className="px-3 py-1 border border-gray-400 text-gray-400 rounded-md hover:bg-gray-800 hover:text-white transition"
+                >
+                  Logout
+                </Link>
+              )}
             </div>
           </div>
-          <div className="d-flex align-items-center gap-3 ms-lg-3">
-            <span className="text-muted">{userName ? `Hi, ${userName}` : ""}</span>
-            {onLogout ? (
-              <button className="btn btn-primary btn-sm" onClick={onLogout}>Logout</button>
-            ) : (
-              <Link className="btn btn-primary btn-sm" href="/logout">Logout</Link>
-            )}
-          </div>
         </div>
-      </div>
-
-      {/* Offcanvas for mobile */}
-      <div className="offcanvas offcanvas-end" tabIndex={-1} id="dashboardOffcanvas" aria-labelledby="dashboardOffcanvasLabel">
-        <div className="offcanvas-header">
-          <h5 className="offcanvas-title" id="dashboardOffcanvasLabel">Menu</h5>
-          <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-        </div>
-        <div className="offcanvas-body d-flex flex-column">
-          <div className="mb-3">
-            <input className="form-control" placeholder="Search jobs..." />
-          </div>
-          <ul className="navbar-nav mb-3">
-            {navLinks.map((l) => (
-              <li key={l.href} className="nav-item">
-                <Link className="nav-link" href={l.href} data-bs-dismiss="offcanvas">{l.label}</Link>
-              </li>
-            ))}
-          </ul>
-          <div className="mt-auto d-flex align-items-center gap-2">
-            <span className="text-muted flex-grow-1">{userName ? `Hi, ${userName}` : ""}</span>
-            {onLogout ? (
-              <button className="btn btn-primary btn-sm" onClick={onLogout} data-bs-dismiss="offcanvas">Logout</button>
-            ) : (
-              <Link className="btn btn-primary btn-sm" href="/logout" data-bs-dismiss="offcanvas">Logout</Link>
-            )}
-          </div>
-        </div>
-      </div>
+      )}
     </nav>
   );
 }
-
-

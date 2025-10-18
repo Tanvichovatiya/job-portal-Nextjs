@@ -10,7 +10,7 @@ export default function LogoutPage() {
   useEffect(() => {
     socket.emit("logout", {}, () => {
       clearAuth();
-      router.push("/");
+      router.push("/login");
     });
   }, [router]);
 

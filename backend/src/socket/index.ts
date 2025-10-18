@@ -6,6 +6,8 @@ import { registerAuthHandlers } from "./authHandlers";
 import { registerJobHandlers } from "./jobHandlers";
 import { TokenExpiredError } from "jsonwebtoken";
 import { registerApplicationHandlers } from "./applicationHandler";
+import { registerProfileHandlers } from "./profileHandler";
+import { registerNetworkHandlers } from "./networkHandler";
 // import { registerApplicationHandlers } from "./applicationHandlers"; // optional if you have it
 
 export function initSocket(io: IOServer) {
@@ -52,7 +54,9 @@ io.on("connection", (socket: Socket) => {
   // Register your handlers
   registerAuthHandlers(io, socket);
   registerJobHandlers(io, socket);
-  registerApplicationHandlers(io, socket); // optional if you have it
+  registerApplicationHandlers(io, socket);
+  registerProfileHandlers(io, socket);
+  registerNetworkHandlers(io, socket);
 });
 
 }

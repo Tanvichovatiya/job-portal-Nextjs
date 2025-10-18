@@ -14,30 +14,55 @@ enum JobType {
 }
 
 model User {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  email       String   @unique
-  password    String
-  role        String   // "user" or "company"
-  createdAt   DateTime @default(now())
-  jobs        Job[]    @relation("EmployerJobs")
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String   @unique
+  password  String
+  role      String // "user" or "company"
+  createdAt DateTime @default(now())
+
+  // Relations
+  jobs         Job[]         @relation("EmployerJobs")
   applications Application[]
+  profile      Profile?      @relation("UserProfile")
+
+  // 👇 Added missing relations for Connection and Notification
+  requestedConnections Connection[]   @relation("RequestedConnections")
+  receivedConnections  Connection[]   @relation("ReceivedConnections")
+  notifications        Notification[]
+}
+
+model Profile {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @unique @db.ObjectId
+  user       User     @relation("UserProfile", fields: [userId], references: [id])
+  headline   String?
+  about      String?
+  location   String?
+  website    String?
+  skills     String[]
+  avatar     String? // Cloudinary URL
+  education  Json[] // Embedded Education[]
+  experience Json[] // Embedded Experience[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Job {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  description String
-  salary      Int?
-  category    String?
-  location    String?
-  jobType     JobType
-  employerId  String   @db.ObjectId
-  employer    User     @relation("EmployerJobs", fields: [employerId], references: [id])
-  createdAt   DateTime @default(now())
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  description  String
+  salary       Int?
+  category     String?
+  location     String?
+  jobType      JobType
+  employerId   String        @db.ObjectId
+  employer     User          @relation("EmployerJobs", fields: [employerId], references: [id])
+  createdAt    DateTime      @default(now())
   applications Application[]
-  companyName String
+  companyName  String
 }
+
 model Application {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   jobId     String   @db.ObjectId
@@ -45,6 +70,25 @@ model Application {
   userId    String   @db.ObjectId
   user      User     @relation(fields: [userId], references: [id])
   resume    String?
-  status    String   @default("pending") // pending, accepted, rejected
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+}
+
+model Connection {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  requesterId String   @db.ObjectId
+  receiverId  String   @db.ObjectId
+  requester   User     @relation("RequestedConnections", fields: [requesterId], references: [id])
+  receiver    User     @relation("ReceivedConnections", fields: [receiverId], references: [id])
+  status      String   @default("pending") // "pending" | "accepted" | "rejected"
+  createdAt   DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  message   String
+  read      Boolean  @default(false)
   createdAt DateTime @default(now())
 }
