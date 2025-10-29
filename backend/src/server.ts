@@ -27,11 +27,15 @@ const httpServer = http.createServer(app);
 
 const io = new IOServer(httpServer, {
   cors: {
-    origin: process.env.FRONTEND_ORIGIN || "http://localhost:3000",
+    origin: [
+      process.env.FRONTEND_ORIGIN || "http://localhost:3000",
+      "https://job-portal-frontend.vercel.app", // your frontend vercel URL
+    ],
     methods: ["GET", "POST"],
     credentials: true,
   },
-  transports: ["websocket", "polling"], // allow fallback
+  transports: ["websocket", "polling"], // enable both
+  allowEIO3: true, // backward compatibility
 });
 
 initSocket(io);
