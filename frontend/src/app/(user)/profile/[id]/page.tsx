@@ -87,7 +87,7 @@ export default function ViewProfile() {
           )}
 
           {/* Skills Section */}
-          {profile.skills?.length > 0 && (
+          {/* {profile.skills?.length > 0 && (
             <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
               <h2 className="text-xl font-semibold mb-3 border-b border-gray-200 pb-2">Skills</h2>
               <div className="flex flex-wrap gap-2 mt-2">
@@ -101,10 +101,10 @@ export default function ViewProfile() {
                 ))}
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Education Section */}
-          {profile.education?.length > 0 && (
+          {/* {profile.education?.length > 0 && (
             <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
               <h2 className="text-xl font-semibold mb-3 border-b border-gray-200 pb-2">Education</h2>
               <ul className="space-y-2 text-gray-700 mt-2">
@@ -120,10 +120,10 @@ export default function ViewProfile() {
                 ))}
               </ul>
             </div>
-          )}
+          )} */}
 
           {/* Experience Section */}
-          {profile.experience?.length > 0 && (
+          {/* {profile.experience?.length > 0 && (
             <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
               <h2 className="text-xl font-semibold mb-3 border-b border-gray-200 pb-2">Experience</h2>
               <ul className="space-y-2 text-gray-700 mt-2">
@@ -139,7 +139,7 @@ export default function ViewProfile() {
                 ))}
               </ul>
             </div>
-          )}
+          )} */}
         </div>
       </div>
       <Footer />
