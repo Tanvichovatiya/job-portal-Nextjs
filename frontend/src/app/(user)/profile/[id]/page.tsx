@@ -28,15 +28,18 @@ export default function ViewProfile() {
   const userId = params.id;
 
   useEffect(() => {
-    if (!token) return;
-    authenticateSocket(token);
+  if (!token) return;
+  if (!userId) return; // ✅ fix
 
-    getProfileById(userId, (res) => {
-      if (res.status === "ok") setProfile(res.profile);
-      else alert(res.message);
-      setLoading(false);
-    });
-  }, [token, userId]);
+  authenticateSocket(token);
+
+  getProfileById(userId, (res) => {
+    if (res.status === "ok") setProfile(res.profile);
+    else alert(res.message);
+    setLoading(false);
+  });
+}, [token, userId]);
+
 
   if (loading) return <p className="text-center mt-20 text-gray-500">Loading...</p>;
   if (!profile) return <p className="text-center mt-20 text-gray-500">Profile not found</p>;
