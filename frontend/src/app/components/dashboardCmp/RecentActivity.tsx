@@ -31,17 +31,20 @@ export default function RecentActivity() {
             No recent activity
           </div>
         ) : (
-          activities.map((a, i) => (
-            <div
-              key={i}
-              className="flex justify-between items-start bg-gray-50 hover:bg-gray-100 transition rounded-lg p-3 text-sm"
-            >
-              <div className="text-black">{a.text}</div>
-              <div className="text-gray-500 text-xs whitespace-nowrap ml-3">
-                {new Date(a.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-              </div>
-            </div>
-          ))
+        activities.map((a, i) =>
+  a ? ( // check if 'a' is not undefined
+    <div
+      key={i}
+      className="flex justify-between items-start bg-gray-50 hover:bg-gray-100 transition rounded-lg p-3 text-sm"
+    >
+      <div className="text-black">{a.text}</div>
+      <div className="text-gray-500 text-xs whitespace-nowrap ml-3">
+        {new Date(a.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+      </div>
+    </div>
+  ) : null
+)
+
         )}
       </div>
     </div>

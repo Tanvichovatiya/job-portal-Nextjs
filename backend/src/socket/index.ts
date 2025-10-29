@@ -8,6 +8,7 @@ import { TokenExpiredError } from "jsonwebtoken";
 import { registerApplicationHandlers } from "./applicationHandler";
 import { registerProfileHandlers } from "./profileHandler";
 import { registerNetworkHandlers } from "./networkHandler";
+import { registerCompanyProfileHandlers } from "./companyProfileHandler";
 // import { registerApplicationHandlers } from "./applicationHandlers"; // optional if you have it
 
 export function initSocket(io: IOServer) {
@@ -31,25 +32,22 @@ io.on("connection", (socket: Socket) => {
   console.log("Socket connected:", socket.id);
 
   // Authenticate event
-  socket.on("authenticate", (token: string, cb: (res: any) => void) => {
-    try {
-      const res = verifyToken(token); // verify JWT
-      if (res.ok) {
-        (socket as any).data.userId = res.payload.userId;
-        (socket as any).data.role = res.payload.role;
-
-        // Join private room for this user
-        socket.join(`user:${res.payload.userId}`);
-
-        cb({ status: "ok" });
-        console.log(`Socket ${socket.id} authenticated for userId: ${res.payload.userId}`);
-      } else {
-        cb({ status: "error", message: "Invalid token" });
-      }
-    } catch (err) {
+  socket.on("authenticate", (token: string, cb) => {
+  try {
+    const res = verifyToken(token);
+    if (res.ok) {
+      (socket as any).data.userId = res.payload.userId;
+      socket.join(`user:${res.payload.userId}`);
+      cb({ status: "ok" });
+      console.log(`Socket ${socket.id} authenticated for userId: ${res.payload.userId}`);
+    } else {
       cb({ status: "error", message: "Invalid token" });
     }
-  });
+  } catch {
+    cb({ status: "error", message: "Invalid token" });
+  }
+});
+
 
   // Register your handlers
   registerAuthHandlers(io, socket);
@@ -57,6 +55,8 @@ io.on("connection", (socket: Socket) => {
   registerApplicationHandlers(io, socket);
   registerProfileHandlers(io, socket);
   registerNetworkHandlers(io, socket);
+  registerCompanyProfileHandlers(io, socket);
+
 });
 
 }

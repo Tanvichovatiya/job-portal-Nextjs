@@ -49,7 +49,7 @@ export default function JobList() {
             <h5>{job.title}</h5>
             <p>{job.description}</p>
             <small>
-              {job.location} | Salary: {job.salary} | By: {job.employer?.name}
+              {job.location} | Salary: {job.salary} 
             </small>
           </li>
         ))}

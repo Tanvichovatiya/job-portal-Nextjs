@@ -47,12 +47,23 @@ export function clearAuth() {
 }
 
 // Get both token and user object
-export function getAuth() {
+// lib/auth.ts
+
+export function getAuth(): { token: string | null; user: { id: string; name: string; role: string } | null } {
   if (typeof window === "undefined") {
-    return { token: null, user: null }; // avoid server-side errors
+    // Prevent errors during SSR in Next.js
+    return { token: null, user: null };
   }
 
   const token = localStorage.getItem("token");
-  const user = localStorage.getItem("user");
-  return { token, user: user ? JSON.parse(user) : null };
+  const userData = localStorage.getItem("user");
+
+  try {
+    const user = userData ? JSON.parse(userData) : null;
+    return { token, user };
+  } catch {
+    // if parsing fails, clear bad data
+    localStorage.removeItem("user");
+    return { token, user: null };
+  }
 }

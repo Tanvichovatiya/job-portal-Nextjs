@@ -38,6 +38,7 @@ export default function LoginForm() {
       setIsSubmitting(false);
 
       if (res.status === "ok") {
+        alert("Login successful!");
         setAuth(res.token, {
           id: res.user.id || res.user._id,
           name: res.user.name,
@@ -46,10 +47,17 @@ export default function LoginForm() {
 
         authenticateSocket(res.token);
 
-        if (role === "company") router.push("/dashboard");
-        else router.push("/home");
+        const stored = localStorage.getItem("user");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          
+          if (parsed.role === "company") router.push("/dashboard");
+          else router.push("/home");
+        }
       } else {
-        setErrorMessage(res.message || "Login failed. Please check your credentials.");
+        setErrorMessage(
+          res.message || "Login failed. Please check your credentials."
+        );
       }
     });
   };
@@ -75,7 +83,9 @@ export default function LoginForm() {
         }}
       >
         <div className="card-body p-4 p-md-5">
-          <h2 className="text-center mb-3 fw-bold text-primary">Welcome back</h2>
+          <h2 className="text-center mb-3 fw-bold text-primary">
+            Welcome back
+          </h2>
           <p className="text-center text-muted mb-4">
             Sign in to continue your journey.
           </p>

@@ -21,16 +21,19 @@ model User {
   role      String // "user" or "company"
   createdAt DateTime @default(now())
 
-  // Relations
-  jobs         Job[]         @relation("EmployerJobs")
-  applications Application[]
-  profile      Profile?      @relation("UserProfile")
+  jobs            Job[]          @relation("EmployerJobs")
+  applications    Application[]
+  profile         Profile?       @relation("UserProfile")
+  companyProfile  CompanyProfile? // ✅ add this line
 
-  // 👇 Added missing relations for Connection and Notification
   requestedConnections Connection[]   @relation("RequestedConnections")
   receivedConnections  Connection[]   @relation("ReceivedConnections")
-  notifications        Notification[]
+
+  // ✅ add this line for the opposite side of Notification relation
+  notifications Notification[]
 }
+
+
 
 model Profile {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -83,12 +86,31 @@ model Connection {
   status      String   @default("pending") // "pending" | "accepted" | "rejected"
   createdAt   DateTime @default(now())
 }
-
 model Notification {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id])
-  message   String
-  read      Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String   
+  message      String
+  read         Boolean  @default(false)
+  connectionId String?  @db.ObjectId
+  createdAt    DateTime @default(now())
+
+  // ✅ relation to User
+  user         User     @relation(fields: [userId], references: [id])
 }
+
+model CompanyProfile {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @unique @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  companyName String
+  description String?
+  location    String?
+  website     String?
+  logo        String?
+  industry    String?
+  employees   Int?
+  foundedYear Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+

@@ -39,20 +39,51 @@ export default function ApplicantsTable() {
   }, [auth.token]);
 
   const updateStatus = (id: string, status: "accepted" | "rejected") => {
-    socket.emit("updateApplicationStatus", { applicationId: id, status }, (res: any) => {
-      if (res.status !== "ok") alert(res.message || "Failed to update status.");
-    });
+    socket.emit(
+      "updateApplicationStatus",
+      { applicationId: id, status },
+      (res: any) => {
+        if (res.status !== "ok") alert(res.message || "Failed to update status.");
+      }
+    );
+  };
+
+  // Download / View resume properly with correct file format
+  const handleResumeClick = async (url: string | undefined) => {
+    if (!url) return;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Failed to fetch resume");
+
+      const blob = await response.blob();
+
+      // Get extension from URL
+      const extensionMatch = url.match(/\.(pdf|docx?|txt)$/i);
+      const extension = extensionMatch ? extensionMatch[0] : ".pdf"; // default .pdf
+      const filename = `resume_${Date.now()}${extension}`;
+
+      // Create link and trigger download
+      const link = document.createElement("a");
+      link.href = window.URL.createObjectURL(blob);
+      link.download = filename;
+      link.target = "_blank";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err: any) {
+      console.error("Download error:", err);
+      alert("Failed to download resume");
+    }
   };
 
   return (
     <div className="bg-white text-black shadow-md rounded-xl border border-gray-200 overflow-hidden">
-      {/* Header */}
       <div className="p-4 border-b border-gray-200 bg-gray-50">
         <h5 className="text-lg font-semibold">Applicants</h5>
         <p className="text-sm text-gray-500 mt-1">Manage job applications in real time</p>
       </div>
 
-      {/* Table */}
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
@@ -65,10 +96,7 @@ export default function ApplicantsTable() {
 
           <tbody className="divide-y divide-gray-200 bg-white">
             {applicants.map((a) => (
-              <tr
-                key={a.id}
-                className="hover:bg-gray-50 transition-colors duration-150"
-              >
+              <tr key={a.id} className="hover:bg-gray-50 transition-colors duration-150">
                 <td className="px-5 py-3 font-medium">{a.name}</td>
                 <td className="px-5 py-3">{a.role}</td>
                 <td className="px-5 py-3">
@@ -89,13 +117,12 @@ export default function ApplicantsTable() {
                 </td>
                 <td className="px-5 py-3">
                   {a.resume ? (
-                    <a
-                      href={a.resume}
-                      target="_blank"
-                      className="text-gray-700 hover:text-gray-900 no-underline font-medium"
+                    <button
+                      onClick={() => handleResumeClick(a.resume)}
+                      className="text-blue-600 hover:underline font-medium"
                     >
                       View
-                    </a>
+                    </button>
                   ) : (
                     <span className="text-gray-400">—</span>
                   )}
@@ -123,10 +150,7 @@ export default function ApplicantsTable() {
 
             {applicants.length === 0 && (
               <tr>
-                <td
-                  colSpan={6}
-                  className="text-center py-6 text-gray-500 font-medium"
-                >
+                <td colSpan={6} className="text-center py-6 text-gray-500 font-medium">
                   No applicants yet
                 </td>
               </tr>

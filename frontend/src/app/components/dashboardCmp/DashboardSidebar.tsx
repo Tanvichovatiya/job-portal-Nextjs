@@ -7,9 +7,9 @@ export default function DashboardSidebar() {
 
   const menuItems = [
     { href: "/dashboard", label: "Dashboard" },
-    { href: "/dashboard/jobs", label: "Jobs" },
-    { href: "/dashboard/applications", label: "Applications" },
-    { href: "/dashboard/profile", label: "Profile" },
+    { href: "/job", label: "Jobs" },
+    { href: "/applications", label: "Applications" },
+    { href: "/companyProfile", label: "Profile" },
   ];
 
   return (

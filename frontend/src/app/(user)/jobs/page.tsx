@@ -4,6 +4,7 @@ import Link from "next/link";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import { socket } from "../../../../lib/socket";
+import JobApplicationsTable from "@/app/components/JobApplicationsTable";
 
 type Job = {
   id: string;
@@ -73,7 +74,7 @@ export default function UserPage() {
 
 
     
-
+    
       {/* Filters */}
       <div className="max-w-6xl mx-auto px-4 py-10">
         <div className="bg-white rounded-xl shadow p-5 border border-gray-100">

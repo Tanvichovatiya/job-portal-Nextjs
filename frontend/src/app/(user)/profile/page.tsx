@@ -56,7 +56,10 @@ export default function ProfilePage() {
         if (res.status === "ok") {
           setProfile(res.profile);
           alert("✅ Profile updated!");
-        } else alert("❌ " + res.message);
+        } else {
+          console.log(res)
+          alert("❌ " + res.message);
+        }
       }
     );
   };

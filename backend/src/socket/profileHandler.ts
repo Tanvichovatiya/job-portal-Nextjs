@@ -1,10 +1,10 @@
-// src/socket/profileHandlers.ts
+// src/socket/profileHandler.ts
 import { Server, Socket } from "socket.io";
 import { prisma } from "../prisma";
 import { v4 as uuidv4 } from "uuid";
 import { uploadBase64Raw } from "../utils/cloudinary";
 
-// helper
+// Helper to require authentication
 function requireAuth(socket: Socket) {
   const userId = (socket as any).data?.userId;
   if (!userId) throw new Error("Unauthenticated");
@@ -12,13 +12,19 @@ function requireAuth(socket: Socket) {
 }
 
 export function registerProfileHandlers(io: Server, socket: Socket) {
-  /** 🔹 Get Profile */
+  /** 🔹 Get my profile (authenticated user) */
   socket.on("getProfile", async (payload, cb) => {
     try {
       const targetUserId = payload?.userId || (socket as any).data?.userId;
-      if (!targetUserId) return cb({ status: "error", message: "No userId" });
+      if (!targetUserId) return cb({ status: "error", message: "No userId provided" });
 
-      const profile = await prisma.profile.findUnique({ where: { userId: targetUserId } });
+      const profile = await prisma.profile.findUnique({
+        where: { userId: targetUserId },
+        include: { user: true },
+      });
+
+      if (!profile) return cb({ status: "error", message: "Profile not found" });
+
       cb({ status: "ok", profile });
     } catch (err: any) {
       console.error("getProfile error:", err);
@@ -26,7 +32,26 @@ export function registerProfileHandlers(io: Server, socket: Socket) {
     }
   });
 
-  /** 🔹 Create / Update Profile */
+  /** 🔹 Get profile by userId (any user) */
+  socket.on("getProfileById", async ({ userId }, cb) => {
+    try {
+      if (!userId) return cb({ status: "error", message: "userId is required" });
+
+      const profile = await prisma.profile.findUnique({
+        where: { userId },
+        include: { user: true },
+      });
+
+      if (!profile) return cb({ status: "error", message: "Profile not found" });
+
+      cb({ status: "ok", profile });
+    } catch (err: any) {
+      console.error("getProfileById error:", err);
+      cb({ status: "error", message: "Something went wrong" });
+    }
+  });
+
+  /** 🔹 Save/update profile */
   socket.on("saveProfile", async (payload, cb) => {
     try {
       const userId = requireAuth(socket);
@@ -64,7 +89,7 @@ export function registerProfileHandlers(io: Server, socket: Socket) {
     }
   });
 
-  /** 🔹 Add / Update / Remove Education */
+  /** 🔹 Education CRUD */
   socket.on("addEducation", async (payload, cb) => {
     try {
       const userId = requireAuth(socket);
@@ -91,7 +116,6 @@ export function registerProfileHandlers(io: Server, socket: Socket) {
       const updatedEdu = (profile.education as any[]).map((e) =>
         e.id === id ? { ...e, ...changes } : e
       );
-
       const updated = await prisma.profile.update({ where: { userId }, data: { education: updatedEdu } });
       cb({ status: "ok", education: updated.education });
     } catch (err: any) {
@@ -113,7 +137,7 @@ export function registerProfileHandlers(io: Server, socket: Socket) {
     }
   });
 
-  /** 🔹 Experience */
+  /** 🔹 Experience CRUD (same as Education) */
   socket.on("addExperience", async (payload, cb) => {
     try {
       const userId = requireAuth(socket);

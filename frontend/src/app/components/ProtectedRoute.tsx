@@ -1,35 +1,35 @@
-// components/ProtectedRoute.tsx
 "use client";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { getToken, getUserRole } from "../../../lib/auth";
+import { getAuth, getUserRole } from "../../../lib/auth";
 
-export default function ProtectedRoute({
-  children,
-  requiredRole,
-}: {
-  children: React.ReactNode;
-  requiredRole?: string;
-}) {
+export default function ProtectedRoute({ children, allowedRoles }: any) {
+  const [isAllowed, setIsAllowed] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
- useEffect(() => {
-  const token = getToken();
-  const role = getUserRole();
+  useEffect(() => {
+    if (typeof window === "undefined") return;
 
-  
+    const { user } = getAuth();
+    const role = getUserRole();
 
-  if (!token) {
-    router.push("/login");
-    return;
-  }
+    if (!user || !role) {
+      router.push("/login");
+      return;
+    }
 
-  if (requiredRole && role !== requiredRole) {
-    console.log("protected route not allowed");
-    router.push("/");
-    return;
-  }
-}, [router, requiredRole]);
+    if (!allowedRoles.includes(role)) {
+      router.push("/");
+      return;
+    }
 
-  return <>{children}</>;
+    setIsAllowed(true);
+    setIsLoading(false);
+  }, [router, allowedRoles]);
+
+  if (isLoading)
+    return <div className="text-center py-10 text-gray-500">Loading...</div>;
+
+  return isAllowed ? children : null;
 }

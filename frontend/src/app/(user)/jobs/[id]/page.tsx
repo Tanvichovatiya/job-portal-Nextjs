@@ -11,18 +11,29 @@ export default function SingleJobPage() {
   const [job, setJob] = useState<any | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [hasApplied, setHasApplied] = useState(false);
+
   const { token, user } = getAuth();
 
   useEffect(() => {
-    if (token) authenticateSocket(token);
+  socket.emit("getJobById", id, (res: any) => {
+    if (res.status === "ok") setJob(res.job);
+  });
 
-    socket.emit("getJobById", id, (res: any) => {
-      if (res.status === "ok") setJob(res.job);
+  if (user?.id) {
+    socket.emit("getApplicantsForUser", { jobId: id, userId: user.id }, (res: any) => {
+      if (res.status === "ok" && res.applied) setHasApplied(true);
     });
+  }
 
-    return () => socket.off("getJobById");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  return () => {
+    socket.off("getJobById");
+  };
+}, [id, user?.id]);
+
+useEffect(() => {
+  if (token) authenticateSocket(token);
+}, [token]);
 
   const fileToBase64 = (f: File) =>
     new Promise<string>((resolve, reject) => {
@@ -36,27 +47,32 @@ export default function SingleJobPage() {
       reader.onerror = (e) => reject(e);
     });
 
-  const handleApply = async () => {
-    if (!file) return alert("Please upload resume");
-    if (!user?.id) return alert("You must be logged in as candidate");
+ const handleApply = async () => {
+  if (!file) return alert("Please upload resume");
+  if (!user?.id) return alert("You must be logged in as candidate");
 
-    setLoading(true);
-    try {
-      const base64 = await fileToBase64(file);
-      socket.emit(
-        "applyToJob",
-        { jobId: id, userId: user.id, resumeBase64: base64 },
-        (res: any) => {
-          setLoading(false);
-          if (res.status === "ok") alert("Application submitted!");
-          else alert(res.message || "Failed to apply");
+  setLoading(true);
+  try {
+    const base64 = await fileToBase64(file);
+    socket.emit(
+      "applyToJob",
+      { jobId: id, userId: user.id, resumeBase64: base64 },
+      (res: any) => {
+        setLoading(false);
+        if (res.status === "ok") {
+          alert("Application submitted!");
+          setHasApplied(true); // ✅ Instantly disable button & update UI
+        } else {
+          alert(res.message || "Failed to apply");
         }
-      );
-    } catch (err: any) {
-      setLoading(false);
-      alert("Upload error");
-    }
-  };
+      }
+    );
+  } catch (err: any) {
+    setLoading(false);
+    alert("Upload error");
+  }
+};
+
 
   if (!job) return <div className="p-6 text-center">Loading job...</div>;
 
@@ -75,7 +91,8 @@ export default function SingleJobPage() {
             {job.title}
           </h1>
           <p className="text-gray-200 mt-2 text-sm md:text-lg">
-            {job.companyName} • {job.location || "Remote"} • {job.jobType || "Full-time"}
+            {job.companyName} • {job.location || "Remote"} •{" "}
+            {job.jobType || "Full-time"}
           </p>
         </div>
       </section>
@@ -102,14 +119,18 @@ export default function SingleJobPage() {
           </label>
 
           <div className="flex gap-3">
-            <button
-              onClick={handleApply}
-              disabled={loading}
-              className="flex-1 py-2 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition"
-            >
-              {loading ? "Applying..." : "Apply Now"}
-            </button>
-           
+           <button
+  onClick={handleApply}
+  disabled={loading || hasApplied}
+  className={`flex-1 py-2 font-medium rounded-lg transition ${
+    hasApplied
+      ? "bg-gray-400 cursor-not-allowed text-white"
+      : "bg-black hover:bg-gray-800 text-white"
+  }`}
+>
+  {hasApplied ? "Already Applied" : loading ? "Applying..." : "Apply Now"}
+</button>
+
           </div>
         </div>
       </div>
