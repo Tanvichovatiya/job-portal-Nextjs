@@ -25,21 +25,20 @@ export default function ViewProfile() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const userId = params.id;
+   const userId = params?.id as string | undefined;
 
   useEffect(() => {
-  if (!token) return;
-  if (!userId) return; // ✅ fix
+    if (!token || !userId) return;
 
-  authenticateSocket(token);
+    authenticateSocket(token);
 
-  getProfileById(userId, (res) => {
-    if (res.status === "ok") setProfile(res.profile);
-    else alert(res.message);
-    setLoading(false);
-  });
-}, [token, userId]);
-
+    // ✅ Pass only when defined
+    getProfileById(userId, (res: any) => {
+      if (res.status === "ok") setProfile(res.profile);
+      else alert(res.message);
+      setLoading(false);
+    });
+  }, [token, userId]);
 
   if (loading) return <p className="text-center mt-20 text-gray-500">Loading...</p>;
   if (!profile) return <p className="text-center mt-20 text-gray-500">Profile not found</p>;
