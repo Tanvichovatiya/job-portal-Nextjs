@@ -96,7 +96,7 @@ export default function DashboardPage() {
               </div>
               <div id="your-jobs">
                 <h5 className="text-lg font-medium mb-3 text-gray-700">Your Jobs</h5>
-                <JobList />
+                <CompanyJobList />
 
               </div>
             </div>
