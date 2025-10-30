@@ -1,7 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { socket } from "../../../lib/socket";
+import { authenticateSocket, socket } from "../../../lib/socket";
 import { getAuth } from "../../../lib/auth";
+
 
 type Job = {
   id: string;
@@ -27,33 +28,43 @@ export default function CompanyJobList({
 
   // ✅ Fetch only the logged-in company's jobs
   useEffect(() => {
-    const fetchMyJobs = () => {
-      socket.emit("getMyJobs", {}, (res: any) => {
-        if (res.status === "ok") setJobs(res.jobs);
-        else alert(res.message || "Could not fetch jobs");
-        setLoading(false);
-      });
-    };
+  const auth = getAuth();
+  if (!auth?.token) return alert("User not authenticated");
 
-    fetchMyJobs();
+  // ✅ Authenticate socket with JWT
+  authenticateSocket(auth.token);
 
-    // ✅ Real-time updates
-    const onCreated = fetchMyJobs;
-    const onUpdated = (job: Job) =>
-      setJobs((prev) => prev.map((j) => (j.id === job.id ? job : j)));
-    const onDeleted = ({ jobId }: { jobId: string }) =>
-      setJobs((prev) => prev.filter((j) => j.id !== jobId));
+  const fetchMyJobs = () => {
+    socket.emit("getMyJobs", {}, (res: any) => {
+      if (res.status === "ok") setJobs(res.jobs);
+      else alert(res.message || "Could not fetch jobs");
+      setLoading(false);
+    });
+  };
 
-    socket.on("job:created", onCreated);
-    socket.on("job:updated", onUpdated);
-    socket.on("job:deleted", onDeleted);
+  // ✅ Wait until socket is connected
+  if (socket.connected) fetchMyJobs();
+  else socket.on("connect", fetchMyJobs);
 
-    return () => {
-      socket.off("job:created", onCreated);
-      socket.off("job:updated", onUpdated);
-      socket.off("job:deleted", onDeleted);
-    };
-  }, []);
+  // ✅ Real-time updates
+  const onCreated = fetchMyJobs;
+  const onUpdated = (job: Job) =>
+    setJobs((prev) => prev.map((j) => (j.id === job.id ? job : j)));
+  const onDeleted = ({ jobId }: { jobId: string }) =>
+    setJobs((prev) => prev.filter((j) => j.id !== jobId));
+
+  socket.on("job:created", onCreated);
+  socket.on("job:updated", onUpdated);
+  socket.on("job:deleted", onDeleted);
+
+  return () => {
+    socket.off("connect", fetchMyJobs);
+    socket.off("job:created", onCreated);
+    socket.off("job:updated", onUpdated);
+    socket.off("job:deleted", onDeleted);
+  };
+}, []);
+
 
   // ✅ View job details (via getJobById)
   const viewJobDetails = (id: string) => {
