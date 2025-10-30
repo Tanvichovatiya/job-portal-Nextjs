@@ -11,6 +11,7 @@ import JobForm from "@/app/components/JobForm";
 
 import { getAuth, clearAuth } from "../../../../lib/auth";
 import CompanyJobList from "@/app/components/CompanyJobList";
+import JobList from "@/app/components/JobList";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -95,7 +96,7 @@ export default function DashboardPage() {
               </div>
               <div id="your-jobs">
                 <h5 className="text-lg font-medium mb-3 text-gray-700">Your Jobs</h5>
-                <CompanyJobList onEdit={(job) => console.log("Edit Job:", job)} />
+                <JobList />
 
               </div>
             </div>
