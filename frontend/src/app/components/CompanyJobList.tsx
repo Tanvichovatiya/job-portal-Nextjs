@@ -34,7 +34,7 @@ export default function CompanyJobList() {
         if (res.status === "ok") {
           setJobs(res.jobs);
         } else {
-          console.error("Error fetching jobs:", res.message);
+          console.log("Error fetching jobs:", res.message);
         }
         setLoading(false);
       });

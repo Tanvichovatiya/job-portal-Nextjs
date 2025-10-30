@@ -76,7 +76,7 @@ socket.on("getMyJobs", async (_payload, cb) => {
   try {
     const userId = (socket as any).data.userId;
     const role = (socket as any).data.role;
-    console.log(userId)
+    console.log("User ID:", userId, "Role:", role);
     if (!userId || role !== "company")
       return cb({ status: "error", message: "Not authorized" });
 
