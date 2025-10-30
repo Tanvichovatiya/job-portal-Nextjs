@@ -8,7 +8,7 @@ import DashboardFooter from "@/app/components/dashboardCmp/DashboardFooter";
 import RecentActivity from "@/app/components/dashboardCmp/RecentActivity";
 import ApplicantsTable from "@/app/components/dashboardCmp/ApplicantsTable";
 import JobForm from "@/app/components/JobForm";
-import JobList from "@/app/components/JobList";
+
 import { getAuth, clearAuth } from "../../../../lib/auth";
 import CompanyJobList from "@/app/components/CompanyJobList";
 
@@ -95,7 +95,8 @@ export default function DashboardPage() {
               </div>
               <div id="your-jobs">
                 <h5 className="text-lg font-medium mb-3 text-gray-700">Your Jobs</h5>
-                <JobList />
+                <CompanyJobList onEdit={(job) => console.log("Edit Job:", job)} />
+
               </div>
             </div>
           </section>
