@@ -4,7 +4,6 @@ import Link from "next/link";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import { socket } from "../../../../lib/socket";
-import './globals.css';
 type Job = {
   id: string;
   title: string;
