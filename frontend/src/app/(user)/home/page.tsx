@@ -142,7 +142,7 @@ export default function UserPage() {
         ) : jobs.length ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {jobs.map((job) => (
-              <Link key={job.id} href={`/jobs/${job.id}`} className="block  no-underline">
+              <Link key={job.id} href={`/jobs/${job.id}`} className="block no-underline">
                 <div className="bg-white rounded-xl shadow hover:shadow-lg transition p-5 h-full flex flex-col justify-between border border-gray-100">
                   <div>
                     <div className="flex justify-between items-start mb-1">
