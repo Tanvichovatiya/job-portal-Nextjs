@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { FaRupeeSign } from "react-icons/fa";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
 import { socket } from "../../../../lib/socket";
@@ -28,7 +29,7 @@ export default function UserPage() {
   const fetchJobs = (searchValue = "") => {
     setLoading(true);
     const filters = { search: searchValue, location, category, jobType };
-
+    console.log("Fetching jobs with filters:", filters);
     socket.emit("getJobs", filters, (res: any) => {
       if (res.status === "ok") setJobs(res.jobs);
       else alert(res.message || "Could not fetch jobs");
@@ -111,7 +112,7 @@ export default function UserPage() {
               className="border border-gray-300 rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-black focus:outline-none text-gray-600"
             >
               <option value="">Category</option>
-              <option value="Engineering">IT</option>
+              <option value="IT">IT</option>
               <option value="Design">Design</option>
               <option value="Marketing">Marketing</option>
             </select>
@@ -147,8 +148,8 @@ export default function UserPage() {
                     <div className="flex justify-between items-start mb-1">
                       <h3 className="text-lg font-semibold text-black">{job.title}</h3>
                       {job.salary && (
-                        <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-md">
-                          ${job.salary}
+                        <span className="bg-green-100 text-green-700 flex  text-xs px-2 py-1 rounded-md">
+                          <FaRupeeSign className="text-[13px]"/>{job.salary}
                         </span>
                       )}
                     </div>

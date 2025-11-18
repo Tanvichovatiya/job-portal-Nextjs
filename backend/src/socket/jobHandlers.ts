@@ -116,6 +116,7 @@ socket.on("getMyJobs", async (_payload, cb) => {
 
     // Category filter
     if (category && category.trim() !== "") {
+      console.log("Applying category filter:", category);
       filters.category = { equals: category };
     }
 

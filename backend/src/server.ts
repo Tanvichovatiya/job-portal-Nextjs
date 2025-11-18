@@ -29,7 +29,7 @@ const io = new IOServer(httpServer, {
   cors: {
     origin: [
       process.env.FRONTEND_ORIGIN || "http://localhost:3000",
-      "https://job-portal-frontend.vercel.app", // your frontend vercel URL
+       "https://job-portal-frontend.vercel.app", // your frontend vercel URL
     ],
     methods: ["GET", "POST"],
     credentials: true,

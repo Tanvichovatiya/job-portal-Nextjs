@@ -11,7 +11,7 @@ import JobForm from "@/app/components/JobForm";
 
 import { getAuth, clearAuth } from "../../../../lib/auth";
 import CompanyJobList from "@/app/components/CompanyJobList";
-import JobList from "@/app/components/JobList";
+
 
 export default function DashboardPage() {
   const router = useRouter();
