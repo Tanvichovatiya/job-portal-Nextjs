@@ -52,42 +52,59 @@ export function registerProfileHandlers(io: Server, socket: Socket) {
   });
 
   /** 🔹 Save/update profile */
-  socket.on("saveProfile", async (payload, cb) => {
-    try {
-      const userId = requireAuth(socket);
-      const { headline, about, location, website, skills, avatarBase64 } = payload || {};
+ socket.on("saveProfile", async (payload, cb) => {
+  try {
+    const userId = requireAuth(socket);
 
-      let avatarUrl;
-      if (avatarBase64) avatarUrl = await uploadBase64Raw(avatarBase64, "profile-avatars");
+    const {
+      headline,
+      about,
+      location,
+      website,
+      skills,
+      avatarBase64,
+      education,
+      experience,
+    } = payload || {};
 
-      const profile = await prisma.profile.upsert({
-        where: { userId },
-        create: {
-          userId,
-          headline,
-          about,
-          location,
-          website,
-          avatar: avatarUrl || null,
-          skills: Array.isArray(skills) ? skills : [],
-        },
-        update: {
-          headline,
-          about,
-          location,
-          website,
-          avatar: avatarUrl || undefined,
-          skills: Array.isArray(skills) ? skills : undefined,
-        },
-      });
-
-      io.to(`user:${userId}`).emit("profile:updated", { profile });
-      cb({ status: "ok", profile });
-    } catch (err: any) {
-      console.error("saveProfile error:", err);
-      cb({ status: "error", message: err.message });
+    let avatarUrl;
+    if (avatarBase64) {
+      avatarUrl = await uploadBase64Raw(avatarBase64, "profile-avatars");
     }
-  });
+
+    const profile = await prisma.profile.upsert({
+      where: { userId },
+      create: {
+        userId,
+        headline,
+        about,
+        location,
+        website,
+        avatar: avatarUrl || null,
+        skills: Array.isArray(skills) ? skills : [],
+        education: Array.isArray(education) ? education : [],
+        experience: Array.isArray(experience) ? experience : [],
+      },
+      update: {
+        headline,
+        about,
+        location,
+        website,
+        avatar: avatarUrl || undefined,
+        skills: Array.isArray(skills) ? skills : undefined,
+        education: Array.isArray(education) ? education : undefined,
+        experience: Array.isArray(experience) ? experience : undefined,
+      },
+    });
+
+    io.to(`user:${userId}`).emit("profile:updated", { profile });
+    cb({ status: "ok", profile });
+  } catch (err: any) {
+    console.error("saveProfile error:", err);
+    cb({ status: "error", message: err.message });
+  }
+});
+
 
   /** 🔹 Education CRUD */
   socket.on("addEducation", async (payload, cb) => {
