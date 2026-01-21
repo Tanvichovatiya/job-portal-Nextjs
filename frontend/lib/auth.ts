@@ -1,10 +1,27 @@
 // lib/auth.ts
 
-// Save token + user details in localStorage
+// Save token + user details in localStorage + cookies
 export function setAuth(token: string, user: { id: string; name: string; role: string }) {
   if (typeof window === "undefined") return;
+
+  // localStorage (client usage)
   localStorage.setItem("token", token);
-  localStorage.setItem("user", JSON.stringify(user)); // store id, name & role together
+  localStorage.setItem("user", JSON.stringify(user));
+
+  // cookies (middleware usage)
+  document.cookie = `token=${token}; path=/`;
+  document.cookie = `role=${user.role}; path=/`;
+}
+
+// Clear auth
+export function clearAuth() {
+  if (typeof window === "undefined") return;
+
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+
+  document.cookie = "token=; Max-Age=0; path=/";
+  document.cookie = "role=; Max-Age=0; path=/";
 }
 
 // Get token
@@ -39,12 +56,6 @@ export function getUserRole(): string | null {
   }
 }
 
-// Clear auth (logout)
-export function clearAuth() {
-  if (typeof window === "undefined") return;
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-}
 
 // Get both token and user object
 // lib/auth.ts

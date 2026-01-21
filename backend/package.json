@@ -4,12 +4,12 @@
   "main": "dist/server.js",
   "license": "MIT",
   "scripts": {
-   "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-  "build": "tsc",
-  "start": "node dist/server.js",
-  "prisma:generate": "prisma generate",
-  "prisma:push": "prisma db push",
-  "postinstall": "prisma generate"
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push",
+    "postinstall": "prisma generate"
   },
   "engines": {
     "node": "20.x"

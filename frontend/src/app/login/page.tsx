@@ -34,32 +34,39 @@ export default function LoginForm() {
     setErrorMessage(null);
     setIsSubmitting(true);
 
-    socket.emit("login", { email, password, role }, (res: any) => {
-      setIsSubmitting(false);
+    socket.emit("login", { email, password }, (res: any) => {
+  setIsSubmitting(false);
 
-      if (res.status === "ok") {
-        alert("Login successful!");
-        setAuth(res.token, {
-          id: res.user.id || res.user._id,
-          name: res.user.name,
-          role: res.user.role,
-        });
+  if (res.status === "ok") {
+    const actualRole = res.user.role;
 
-        authenticateSocket(res.token);
+    // 🚫 Block wrong role login
+    if (actualRole !== role) {
+      setErrorMessage(
+        `You are registered as "${actualRole}". Please login using correct role.`
+      );
+      return;
+    }
 
-        const stored = localStorage.getItem("user");
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          
-          if (parsed.role === "company") router.push("/dashboard");
-          else router.push("/home");
-        }
-      } else {
-        setErrorMessage(
-          res.message || "Login failed. Please check your credentials."
-        );
-      }
+    alert("Login successful!");
+
+    setAuth(res.token, {
+      id: res.user.id || res.user._id,
+      name: res.user.name,
+      role: actualRole,
     });
+
+    authenticateSocket(res.token);
+
+    if (actualRole === "company") router.push("/dashboard");
+    else router.push("/home");
+  } else {
+    setErrorMessage(
+      res.message || "Login failed. Please check your credentials."
+    );
+  }
+});
+
   };
 
   return (

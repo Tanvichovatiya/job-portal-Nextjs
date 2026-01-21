@@ -1,14 +1,18 @@
 
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import DashboardNavbar from "@/app/components/dashboardCmp/DashboardNavbar";
 import DashboardFooter from "@/app/components/dashboardCmp/DashboardFooter";
 import RecentActivity from "@/app/components/dashboardCmp/RecentActivity";
 import ApplicantsTable from "@/app/components/dashboardCmp/ApplicantsTable";
 
+
+
+
 export default function CompanyApplicationsPage() {
+  
   return (
     <>
       <DashboardNavbar />

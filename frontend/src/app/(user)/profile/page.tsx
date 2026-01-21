@@ -1,14 +1,17 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { socket, authenticateSocket } from "../../../../lib/socket";
 import { getAuth } from "../../../../lib/auth";
 import Footer from "@/app/components/Footer";
 import Navbar from "@/app/components/Navbar";
 import { motion } from "framer-motion";
+import { authenticateSocket, socket } from "../../../../lib/socket";
 
 export default function ProfilePage() {
+ 
   const { token } = getAuth();
   const [profile, setProfile] = useState<any>(null);
+ 
+ 
   const [form, setForm] = useState({
     headline: "",
     about: "",
@@ -91,7 +94,7 @@ export default function ProfilePage() {
 
   const removeEdu = (i: number) => setEducation(education.filter((_, idx) => idx !== i));
   const removeExp = (i: number) => setExperience(experience.filter((_, idx) => idx !== i));
-
+ 
   return (
     <>
       <Navbar />
@@ -332,6 +335,7 @@ export default function ProfilePage() {
           )}
         </motion.div>
       </div>
+      
       <Footer />
     </>
   );
